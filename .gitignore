@@ -1,0 +1,10 @@
+# ignore all logs
+*.log
+
+# ignore all cfgs
+*.cfg
+
+# Don't track content of these folders
+instance/
+
+config.py

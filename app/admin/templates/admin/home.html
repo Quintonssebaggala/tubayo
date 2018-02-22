@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{%block content %}
+    <h2 class="uk-h3 uk-margin-remove-bottom">Welcome Charlie Brown</h2>
+<p class="uk-margin-large-bottom uk-margin-small-top">What would you like to do today?</p>
+
+
+<div class="uk-child-width-expand@s uk-text-center" uk-grid>
+	
+
+		{% for key,val in TOPIC_DICT.items() %}
+		<div class="uk-width-1-2">
+			<article class="uk-comment uk-margin-medium-bottom">
+			<header class="uk-comment-hea7der uk-grid-medium uk-flex-top" uk-grid>
+				<div class="uk-width-auto">
+					<img class="uk-comment-avatar" src="img/Edit Property.png"  alt="">
+				</div>
+				<div class="uk-width-expand">
+					<ul class="uk-nav uk-nav-default">
+						<li class="uk-active"><a href="#articles">{{ key }}</a></li>
+						{% for t in val %}
+							<li><a href="{{ url_for(t[1]) }}">{{ t[0] }}</a></li>
+						{% endfor %}
+					</ul>
+				</div>
+			</header>
+		</article>
+		</div>
+		{% endfor %}
+
+			
+
+
+</div>
+{% endblock %}

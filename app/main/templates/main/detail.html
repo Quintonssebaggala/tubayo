@@ -1,0 +1,211 @@
+{% extends 'layout.html' %}
+
+{% block stylesheet %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.3.2/jquery.rateyo.min.css">
+{% endblock %}
+
+{% block body%}
+
+<div class="uk-container uk-margin">
+    <div class="uk-margin-xlarge uk-grid" uk-grid="">
+
+        <div class="uk-width-expand@m uk-first-column uk-border-rounded">
+            <div class="uk-panel uk-border-rounded">
+                <div class="uk-border-rounded uk-position-relative uk-margin uk-width-large uk-margin-auto uk-text-left@m uk-text-center uk-slideshow uk-light"
+                    uk-slideshow="minHeight: 550;maxHeight: 1150;autoplay: true">
+
+                    <ul class="uk-slideshow-items" style="min-height: 550px; height: 550px;">
+                        {% for image in experience.experience.images.all() %}
+                        <li>
+                            <img class="uk-border-rounded" src="{{ url_for('admin.uploaded_file', filename=experience.image.filename) }}" alt="image.filename" uk-cover>
+                        </li>
+                        {% endfor %}
+                    </ul>
+
+                    <a class="uk-position-center-left uk-position-small uk-hidden-hover" href="#" uk-slidenav-previous uk-slideshow-item="previous"></a>
+                    <a class="uk-position-center-right uk-position-small uk-hidden-hover" href="#" uk-slidenav-next uk-slideshow-item="next"></a>
+
+                </div>
+                <div class="uk-position-relative uk-margin uk-width-large uk-margin-auto">
+                    <div class="uk-clearfix uk-margin-remove-bottom">
+                        <div class="uk-float-right">
+                            <a href="#">
+                                <a class="uk-button uk-button-default uk-button-large" href="#booking">see dates</a>
+                            </a>
+                        </div>
+                        <div class="uk-float-left">
+                            <div class="uk-text-meta uk-margin-remove-bottom">${{ experience.experience.price }} per person</div>
+                            <span class="rateYo uk-text-small uk-margin-remove-bottom"><input type="hidden" value="{{ experience.experience.rate_average }}" name="rateyoid" class="rateyoid"></span>
+                            <div class="counter"></div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="uk-section">
+                <h2 id="booking" class="uk-margin">dates available</h2>
+                <table class="uk-table uk-table-striped">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>No of people</th>
+                    <th>@Price</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td></td>
+                    <td class="">
+                        <input id="quality" name="quality" type="number" class="uk-input uk-form-width-small" step="1" min="0" max="" value="1" title="Qty"
+                                                size="4" pattern="[0-9]*" inputmode="numeric">
+                    </td>
+                    <td>
+                        <a href=""class="uk-button uk-button-default" type="submit">Button</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+                <table class="uk-table uk-table-justify uk-table-divider uk-table-small">
+                    <thead>
+                        <tr>
+                            <th class="uk-width-small">Date</th>
+                            <th>Number of people</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>8:00</td>
+                            <td>
+                                <form class="uk-form-horizontal uk-margin" action="#" method="Post">
+                                    <div class="uk-margin">
+
+                                        <div class="uk-form-controls">
+                                            <input id="quality" name="quality" type="number" class="uk-input uk-form-width-small" step="1" min="0" max="" value="1" title="Qty"
+                                                size="4" pattern="[0-9]*" inputmode="numeric">
+
+                                        </div>
+                                        <button class="uk-button uk-button-default" type="submit">Button</button>
+                                    </div>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+
+        <div class="uk-width-expand@m">
+
+            <div>
+
+                <h2 class="uk-text-bold">{{ experience.experience.experience_title }}</h2>
+                <p class="uk-text-meta">{{ experience.experience.place }} · {{ experience.experience.tag }}</p>
+                <div class="uk-clearfix">
+                    <div class="uk-float-right">
+                        <img id="avatar" width="50" class="uk-border-circle uk-text-center uk-margin-small-top" src="https://orig00.deviantart.net/c91f/f/2010/014/b/c/avatar_by_eggar919.jpg">
+                    </div>
+                    <div class="uk-float-left">
+                        <p class="uk-text-bold uk-padding-remove">Food & drink experience</p>
+                        <p class="uk-text-meta uk-padding-remove">Hosted by {{experience.experience.host_name}}</p>
+                    </div>
+                </div>
+                <div class="uk-text-center" uk-grid>
+                    <div class="uk-width-auto">
+                        <span uk-icon="icon: camera"></span>
+                    </div>
+                    <div class="uk-width-expand">
+                        <div>1.5 hours total</div>
+                    </div>
+                </div>
+                <div class="uk-text-center" uk-grid>
+                    <div class="uk-width-auto">
+                        <span uk-icon="icon: camera"></span>
+                    </div>
+                    <div class="uk-width-expand">
+                        <div>1 snack and Drinks</div>
+                    </div>
+                </div>
+                <div class="uk-text-center" uk-grid>
+                    <div class="uk-width-auto">
+                        <span uk-icon="icon: camera"></span>
+                    </div>
+                    <div class="uk-width-expand uk-padding-remove uk-margin-remove">
+                        <div>Offered in English and French</div>
+                    </div>
+                </div>
+                <hr>
+                <dl class="uk-description-list uk-description-list-divider">
+                    <!-- <dt class="uk-h3 uk-text-bold">Description term</dt> -->
+                    <dd>There’s only one spot left. Join 4 others at Pablo’s experience next Tuesday.</dd>
+                    <dt class="uk-h3 uk-text-bold">About your host, Pablo</dt>
+                    <dd>{{ experience.experience.about_experience }}</dd>
+
+                    <dt class="uk-h3 uk-text-bold">What we’ll do</dt>
+                    <dd>{{ experience.experience.what_well_do }}</dd>
+
+                    <dt class="uk-h3 uk-text-bold">What I’ll provide</dt>
+                    <dd>Yumi Juice
+                        <span uk-icon="icon: camera"></span>
+                    </dd>
+                    <dd>Delicious and complex juice, combining vegetables, fruits and herbs.</dd>
+                    <dd>Micro green salad
+                        <span uk-icon="icon: camera"></span>
+                    </dd>
+                    <dd>Ultra-local salad of micro greens</dd>
+
+                    <dt class="uk-h3 uk-text-bold">Who can come</dt>
+                    <dd>{{ experience.experience.who_can_come }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.3.2/jquery.rateyo.min.js"></script>
+
+<script>
+            $(function () {
+                $("input.rateyoid").each(function () {
+                    var current_rating = $(this).val();
+                    var id = '{{ experience.experience.id }}';
+                    $(this).parent().rateYo({
+                        starWidth: "20px",
+                        halfStar: true,
+                        rating: current_rating
+                        
+                    }).on("rateyo.set", function (e, data) {
+                        $(".counter").text(data.rating)
+                        console.log("set event is fired on click3333")
+                        $.ajax({
+                            type: "GET",
+                            url: "{{ url_for('main.details')}}",
+                            contentType: "application/json; charset=utf-8",
+                            data: { name: data.rating,
+                                    id2: id
+                             },
+                            success: function (response) {
+                                console.log(response)
+                            }
+
+                        });
+                    })
+                    .on("rateyo.change", function (e, data) {
+                        console.log("set event is fired on click")
+                        var rating = data.rating;
+                        $(this).next().text(rating);
+                      });
+            });
+            $(".rateYo").rateYo();
+        });
+    </script>
+{% endblock %}

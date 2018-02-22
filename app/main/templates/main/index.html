@@ -1,0 +1,78 @@
+{% extends 'layout.html' %}
+
+{% block stylesheet %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.3.2/jquery.rateyo.min.css">
+
+{% endblock %}
+
+{% block body%}
+
+<div class="">
+    <div class="uk-position-relative uk-visible-toggle uk-light uk-box-shadow-small"  uk-slideshow="min-height: 175; max-height: 300; animation: push; autoplay: true; autoplay-interval: 5000; pause-on-hover: true">
+
+    <ul class="uk-slideshow-items">
+        {% for slideshow in slideshow %}
+            <li>
+                <img class="uk-preserve-width uk-responsive-height uk-responsive-width" src="{{ url_for('admin.uploaded_file', filename=slideshow.filename) }}" alt="{{ slideshow.filename }}" uk-cover uk-responsive>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <a class="uk-position-center-left uk-position-small uk-hidden-hover" href="#" uk-slidenav-previous uk-slideshow-item="previous"></a>
+    <a class="uk-position-center-right uk-position-small uk-hidden-hover" href="#" uk-slidenav-next uk-slideshow-item="next"></a>
+
+</div>
+</div>
+
+<div class="uk-container uk-margin uk-container-large">
+
+    <div class="uk-hidden@l">
+        {% block phone %}{% endblock %}
+    </div>
+    <div class="uk-visible@l">
+        <div uk-grid>
+            <div class="uk-width-3-4 uk-row-first">{{ self.phone() }}</div>
+            <div class="uk-width-1-4">
+                <div class="uk-flex uk-flex-column">
+                   
+                    {% for advert in adverts %}
+                    <div class="uk-panel uk-margin-top">
+                        <img class="uk-height-large uk-flex uk-flex-center uk-flex-middle uk-responsive-width uk-responsive-height" src="{{ url_for('admin.uploaded_file', filename=advert.filename) }}" alt="{{ advert.filename }}">
+
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+{% endblock %}
+
+{% block script %}
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.3.2/jquery.rateyo.min.js"></script>
+<script>
+    $(function () {
+        $("input.rateyoid").each(function () {
+            var current_rating = $(this).val();
+
+            $(this).parent().rateYo({
+                starWidth: "12px",
+                halfStar: true,
+                rating: current_rating,
+                readOnly: true
+            }).on("rateyo.change", function (e, data) {
+                $(".counter").text(data.rating)
+
+            });
+        });
+    });
+</script>
+
+{% endblock %}

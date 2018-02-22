@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{%block content %}
+<h1>{{ experience.title }}</h1>
+
+	    <div class="uk-child-width-1-4@m" uk-grid>
+	            {% for image in experience.images.all() %}
+	                <div>
+	                <div class="uk-card uk-card-default">
+	                    <div class="uk-card-media-top">
+	                    	<a href="{{ url_for('admin.both', id1=image.id, id2=image.experience_id) }}">
+	                    		<img class="uk-height-medium" src="{{ url_for('admin.uploaded_file', filename=image.filename) }}" alt="{{ image.filename}}">
+	                    	</a>
+	                    </div>
+	                    <div class="uk-card-body uk-padding-small">
+	                        <a href="#" class="uk-button uk-button-danger uk-width-1-1">Delete</a>
+	                    </div>
+	                </div>
+	            </div>
+	            {% endfor %}
+	</div>
+
+{% endblock %}

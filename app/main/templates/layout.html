@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Tubayo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
+    <!-- <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css"> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.37/css/uikit.min.css" />
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}" /> -->
+    {% block stylesheet %}{% endblock %}
+
+    <!-- uikit js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.37/js/uikit.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.37/js/uikit-icons.min.js"></script>
+    <!-- <script src="{{ url_for('static', filename='assets/js/init.js') }}"></script> -->
+
+</head>
+
+<body>
+    <div class="uk-offcanvas-content">
+        <div uk-sticky="sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; bottom: #transparent-sticky-navbar">
+            <nav class="uk-navbar-container uk-margin" uk-navbar style="position: relative; z-index: 980;" style="background: #00421E !important;">
+
+                <div class="nav-overlay uk-navbar-left">
+
+                    <a class="uk-navbar-item uk-logo" href="/">
+                        <img src="{{ url_for('static', filename='img/Tubayo-travel--logo.png') }}" class="uk-margin-small-right" width="32"
+                            height="38"> TUBAYO
+                    </a>
+                    <div class="uk-navbar-item uk-visible@m">
+                        <form class="uk-search uk-search-default">
+                               <a href="" class="uk-search-icon-flip" uk-search-icon></a>
+                               <input class="uk-search-input uk-form-width-large" type="search" placeholder="Search...">
+                           </form>
+                    </div>
+
+                </div>
+
+                <div class="nav-overlay uk-navbar-right">
+
+                    <div class="uk-hidden@m">
+                        <a class="uk-navbar-toggle" uk-search-icon uk-toggle="target: .nav-overlay; animation: uk-animation-fade" href="#"></a>
+
+                    </div>
+
+                    <a class="uk-navbar-toggle uk-hidden@m" href="#" uk-toggle="target: #offcanvas-usage">
+                        <span uk-navbar-toggle-icon></span>
+                        <span class="uk-margin-small-left">Menu</span>
+                    </a>
+
+                    <ul class="uk-navbar-nav uk-visible@m">
+                        <li class="">
+                            <a href="#">Experiences</a>
+                        </li>
+                        <li class="">
+                            <a href="#">Shop</a>
+                        </li>
+                        <li class="uk-active">
+                            <a href="">Become a Host</a>
+                        </li>
+                        <li class="">
+                            <a href="#">Help</a>
+                        </li>
+                        <li class="uk-active">
+                            <a href="#">view Cart</a>
+                        </li>
+                        <li class="uk-active">
+                            <a href="#">Login</a>
+                        </li>
+                    </ul>
+
+                </div>
+
+                <div class="nav-overlay uk-navbar-left uk-flex-1" hidden>
+
+                    <div class="uk-navbar-item uk-width-expand">
+                        <form class="uk-search uk-search-navbar uk-width-1-1">
+                            <input class="uk-search-input" type="search" placeholder="Search..." autofocus>
+                        </form>
+                    </div>
+
+                    <a class="uk-navbar-toggle" uk-close uk-toggle="target: .nav-overlay; animation: uk-animation-fade" href="#"></a>
+
+                </div>
+
+            </nav>
+        </div>
+
+        {% block body %}{% endblock %}
+        <!-- The whole page content goes here -->
+
+
+        <div id="offcanvas-usage" uk-offcanvas="flip: true; overlay: true;mode: slide;">
+            <div class="uk-offcanvas-bar">
+
+                <button class="uk-offcanvas-close" type="button" uk-close></button>
+
+                <ul class="uk-nav uk-nav-default">
+                    <li class="uk-active">
+                        <a href="#">Become a Host</a>
+                    </li>
+                    <li class="uk-active">
+                        <a href="#">Help</a>
+                    </li>
+                    <li class="uk-active">
+                        <a href="#">view Cart</a>
+                    </li>
+                    <li class="uk-active">
+                        <a href="#">Login</a>
+                    </li>
+                </ul>
+
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="uk-container">
+
+        <hr class="uk-margin-medium-bottom">
+
+        <footer class="uk-flex-middle uk-grid uk-grid-stack" uk-grid="">
+
+            <div class="uk-width-expand@m uk-first-column">
+                <div class="uk-margin uk-text-center uk-text-left@m">
+                    <a class="uk-logo" href="https://yootheme.com" title="YOOtheme">
+                        <img src="{{ url_for('static', filename='img/Tubayo-travel--logo.png') }}" width="50" height="30" alt="YOOtheme">
+                    </a>
+                    <br>
+                    <small>Made by
+                        <a class="uk-link-reset" href="https://yootheme.com" title="YOOtheme">Tubayo</a> with love and caffeine.</small>
+                </div>
+            </div>
+
+            <div class="uk-width-expand@m uk-grid-margin uk-first-column">
+                <div class="uk-margin uk-text-center uk-text-right@m">
+                    <ul class="uk-subnav uk-subnav-divider uk-flex-inline uk-flex-center">
+                        <li>
+                            <a href="" uk-icon="icon: instagram"></a>
+                        </li>
+                        <li>
+                            <a href="" uk-icon="icon: twitter"></a>
+                        </li>
+                        <li>
+                            <a href="" uk-icon="icon: facebook"></a>
+                        </li>
+                        <li>
+                            <a href="" uk-icon="icon: whatsapp"></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </footer>
+
+    </div>
+
+    {% block script %}{% endblock %}
+
+    <!--<script type="text/javascript">-->
+        <!--$(document).ready(function () {-->
+            <!--$('.autoplay').slick({-->
+                <!--slidesToShow: 6,-->
+                <!--slidesToScroll: 1,-->
+                <!--autoplay: true,-->
+                <!--autoplaySpeed: 2000,-->
+                <!--responsive: [-->
+                    <!--{-->
+                        <!--breakpoint: 1024,-->
+                        <!--settings: {-->
+                            <!--slidesToShow: 3,-->
+                            <!--slidesToScroll: 1,-->
+                            <!--infinite: true,-->
+                            <!--dots: true-->
+                        <!--}-->
+                    <!--},-->
+                    <!--{-->
+                        <!--breakpoint: 600,-->
+                        <!--settings: {-->
+                            <!--slidesToShow: 2,-->
+                            <!--slidesToScroll: 1-->
+                        <!--}-->
+                    <!--},-->
+                    <!--{-->
+                        <!--breakpoint: 480,-->
+                        <!--settings: {-->
+                            <!--slidesToShow: 2,-->
+                            <!--slidesToScroll: 1-->
+                        <!--}-->
+                    <!--}-->
+                    <!--// You can unslick at a given breakpoint now by adding:-->
+                    <!--// settings: "unslick"-->
+                    <!--// instead of a settings object-->
+                <!--]-->
+            <!--});-->
+        <!--});-->
+    <!--</script>-->
+</body>
+</html>

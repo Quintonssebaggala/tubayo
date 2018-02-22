@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Tubayo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--ionicons-->
+    <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <!-- UIkit CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.39/css/uikit.min.css"/>
+
+    <!-- UIkit JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.39/js/uikit.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.39/js/uikit-icons.min.js"></script>
+
+</head>
+
+<body>
+<div class="uk-offcanvas-content">
+    <div class="uk-grid-collapse uk-text-center" uk-grid>
+
+    <div class="uk-width-1-6 uk-visible@m">
+        <div class="uk-tile uk-tile-default">
+            <div class="uk-tile uk-tile-muted uk-height-small">
+                <p class="uk-h4">Muted</p>
+            </div>
+
+        </div>
+
+        <div class="">
+            <ul uk-accordion>
+                {% for key,val in TOPIC_DICT.items() %}
+                <li>
+                    <h3 class="uk-accordion-title">{{ key }}</h3>
+                    <div class="uk-accordion-content">
+                        {% for t in val %}
+                        <p><a href="{{ url_for(t[1]) }}">{{ t[0] }}</a></p>
+                        {% endfor %}
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="uk-width-5-6@m uk-width-1-1@s">
+        <nav class="uk-navbar-container" uk-navbar>
+
+            <div class="uk-navbar-left uk-visible@m">
+
+                <div class="uk-navbar-item">
+            <form class="uk-search uk-search-navbar">
+                <span uk-search-icon></span>
+                <input class="uk-search-input" type="search" placeholder="Search...">
+            </form>
+        </div>
+
+            </div>
+
+            <div class="nav-overlay uk-navbar-right">
+
+                <ul class="uk-navbar-nav uk-visible@m">
+                    <li class="uk-active"><a href="#">Active</a></li>
+                    <li>
+                        <a href="#">Parent</a>
+                        <div class="uk-navbar-dropdown">
+                            <ul class="uk-nav uk-navbar-dropdown-nav">
+                                <li class="uk-active"><a href="#">Active</a></li>
+                                <li><a href="#">Item</a></li>
+                                <li><a href="#">Item</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li><a href="#">Item</a></li>
+                </ul>
+
+                <a class="uk-navbar-toggle uk-hidden@m" uk-search-icon uk-toggle="target: .nav-overlay; animation: uk-animation-fade" href="#"></a>
+
+                <a class="uk-navbar-toggle uk-hidden@m" href="#" uk-toggle="target: #offcanvas-usage">
+                    <span uk-navbar-toggle-icon></span>
+                    <span class="uk-margin-small-left">Menu</span>
+                </a>
+
+            </div>
+
+            <div class="nav-overlay uk-navbar-left uk-flex-1" hidden>
+
+                <div class="uk-navbar-item uk-width-expand">
+                    <form class="uk-search uk-search-navbar uk-width-1-1">
+                        <input class="uk-search-input" type="search" placeholder="Search..." autofocus>
+                    </form>
+                </div>
+
+                <a class="uk-navbar-toggle" uk-close uk-toggle="target: .nav-overlay; animation: uk-animation-fade" href="#"></a>
+
+            </div>
+
+        </nav>
+        {%block content %}{% endblock %}
+
+        <div id="offcanvas-usage" uk-offcanvas="mode: reveal">
+            <div class="uk-offcanvas-bar">
+
+                <button class="uk-offcanvas-close" type="button" uk-close></button>
+
+                <h3>Title</h3>
+
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+
+
+</body>
+</html>
