@@ -1,3 +1,4 @@
+{% from 'paginate.html' import render_pagination %}
 {% extends 'base.html' %}
 
 {%block content %}
@@ -74,7 +75,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for item in obj %}
+                {% for item in obj.items %}
                 <tr>
                     {% for name in col_names %}
 
@@ -102,16 +103,11 @@
             </table>
         </div>
         <div class="uk-width-1-1@s">
-            <ul class="uk-pagination uk-flex-center" uk-margin>
-                <li><a href="#"><span uk-pagination-previous></span></a></li>
-                <li><a href="#">1</a></li>
-                <li class="uk-disabled"><span>...</span></li>
-                <li><a href="#">5</a></li>
-                <li><a href="#">6</a></li>
-                <li class="uk-active"><span>7</span></li>
-                <li><a href="#">8</a></li>
-                <li><a href="#"><span uk-pagination-next></span></a></li>
-            </ul>
+            <!--Pagination -->
+            {% if obj.pages >1 %}
+            {{ render_pagination( obj, 'admin.'+endpoint) }}
+            {% endif %}
+            <!--/Pagination -->
         </div>
     </div>
 </div>

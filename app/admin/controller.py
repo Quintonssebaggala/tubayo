@@ -1,9 +1,12 @@
 import os
 
 from app.admin import admin
+from app.cache import cache
 
 from flask.views import MethodView
 from werkzeug.utils import secure_filename
+
+from sqlalchemy.exc import IntegrityError
 
 import PIL
 from PIL import Image
@@ -68,6 +71,7 @@ class CRUIDAPI(MethodView):
     list_template = 'admin/manage.html'
     detail_template = 'admin/create_edit.html'
 
+
     def __init__(self, model, endpoint, form, exclude=[], rel_mode=None, list_template=None,
                  detail_template=None):
         self.model = model
@@ -92,6 +96,8 @@ class CRUIDAPI(MethodView):
         return render_template(self.list_template, path=self.path, TOPIC_DICT=TOPIC_DICT, **kwargs)
 
     def get(self, obj_id='', operation=''):
+        cache.delete('index')
+        cache.delete('detail')
         
         obj = self.model.query.get(obj_id)
 
@@ -155,7 +161,7 @@ class CRUIDAPI(MethodView):
                 db.session.delete(obj)
                 db.session.commit()
 
-            return redirect(self.path +'delete/'+ str(obj_id))
+            return redirect(request.environ['HTTP_REFERER'])
 
         elif operation == 'new':
             form = self.form()
@@ -172,14 +178,18 @@ class CRUIDAPI(MethodView):
             return self.render_detail(form=form, action=action, obj=obj)
 
         else:
+            page_num = int(request.args.get('page', 1))
             col = self.model.__table__.columns.keys()
             col_names = [name for name in col if name not in self.exclude]
-            obj = self.model.query.order_by(self.model.created_on.desc()).all()
-            return self.render_list(obj=obj, col_names=col_names)
+            obj = self.model.query.order_by(self.model.created_on.desc()).paginate(page=page_num, per_page=5, error_out=True)
+            endpoint = self.endpoint
+            return self.render_list(obj=obj, col_names=col_names, endpoint=endpoint)
 
     def post(self, obj_id='', operation=''):
 
         form = self.form()
+        cache.delete('index')
+        cache.delete('detail')
 
         if obj_id:
 
@@ -244,8 +254,12 @@ class CRUIDAPI(MethodView):
                             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                             upload_obj = self.rel_mode(filename=filename)
                             obj.images.append(upload_obj)
-                    db.session.add(obj)
-                    db.session.commit()
+                    try:
+                        db.session.add(obj)
+                        db.session.commit()
+                    except IntegrityError as e:
+                        app.logger.error(e)
+                        db.session.rollback()
                 return redirect(self.path)
 
             elif hasattr(form, 'filename'):
@@ -260,9 +274,13 @@ class CRUIDAPI(MethodView):
 
                         if mime_type.startswith('image'):
                             create_thumbnail(filename)
-                    form.populate_obj(obj)
-                    db.session.add(obj)
-                    db.session.commit()
+                    try:
+                        form.populate_obj(obj)
+                        db.session.add(obj)
+                        db.session.commit()
+                    except IntegrityError as e:
+                        app.logger.error(e)
+                        db.session.rollback()
 
                 flash("Achievement created")
 

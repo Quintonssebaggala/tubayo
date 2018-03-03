@@ -2,22 +2,35 @@ from flask import render_template, send_from_directory, request, json
 from app import app
 from app.main import main
 from app.cache import cache
-from flask_login import current_user
-from app.data.models import db, Advert, Cart, Date_available, Experience, Flyer, Imageexp, Rate, Shop, Slideshow, Story
+from flask_login import current_user, login_required
+from app.data.models import db, Permission, Advert, Cart, Date_available, Experience, Flyer, Imageexp, Rate, Shop, Slideshow, Story
+from flask_mail import Message
+from app import mail
+from app.decorators import admin_required, permission_required
 
+@main.route("/message")
+def message():
 
+    msg = Message("Hello",
+                  sender="from@example.com",
+                  recipients=["quinton.ssebaggala@gmail.com"])
+    msg.body = "testing"
+    msg.html = "<b>testing</b>"
+    
+    return mail.send(msg)
 
 @main.route('/')
-@cache.cached(300)
+# @login_required
+# @admin_required
+@cache.cached(300, key_prefix='index')
 def index():
-
-	slideshow = Slideshow.query.order_by(Slideshow.created_on.desc()).limit(3).all()
-	stories = Story.query.order_by(Story.created_on.desc()).limit(12).all()
-	experience = Imageexp.query.order_by(Imageexp.created_on.desc()).limit(8).all()
-	shop = Shop.query.order_by(Shop.created_on.desc()).limit(12).all()
-	flyers = Flyer.query.order_by(Flyer.created_on.desc()).limit(2).all()
-	adverts = Advert.query.order_by(Advert.created_on.desc()).limit(3).all()
-	return render_template('main/body.html', slideshow=slideshow, stories=stories, 
+    slideshow = Slideshow.query.order_by(Slideshow.created_on.desc()).limit(3).all()
+    stories = Story.query.order_by(Story.created_on.desc()).limit(12).all()
+    experience = Imageexp.query.order_by(Imageexp.created_on.desc()).limit(8).all()
+    shop = Shop.query.order_by(Shop.created_on.desc()).limit(12).all()
+    flyers = Flyer.query.order_by(Flyer.created_on.desc()).limit(2).all()
+    adverts = Advert.query.order_by(Advert.created_on.desc()).limit(3).all()
+    return render_template('main/body.html', slideshow=slideshow, stories=stories, 
 							experience=experience, shop=shop, flyers=flyers, adverts=adverts)
 
 
@@ -26,9 +39,19 @@ def test():
     data = Experience.query.order_by(Experience.created_on.desc()).limit(5).all()
     return render_template('test.html', data=data)
 
+@main.route('/shop/')
+@login_required
+# @permission_required(Permission.FOLLOW)
+def shop():
+    page_num = int(request.args.get('page', 1))
+    # shop = Shop.query.order_by(Shop.created_on.desc()).limit(12).all()
+    shop = Shop.query.order_by(Shop.created_on.desc()).paginate(page=page_num, per_page=5, error_out=True)
+    return render_template('main/shop.html', shop=shop)
+
 
 
 @main.route('/detail', methods=['GET'])
+@cache.cached(300, key_prefix='detail')
 def detail():
     experience_id = request.args.get('id')
     experience = Imageexp.query.filter_by(id=experience_id).first()
@@ -42,6 +65,8 @@ def details():
     experience = Experience.query.get(id)
     rate2 = Rate(rating=rating)
     experience.rates.append(rate2)
+    cache.delete('index')
+    cache.delete('detail')
     db.session.add(experience)
     db.session.commit()
     return json.dumps({'status': 'OK', 'rating': rating, 'id': id})

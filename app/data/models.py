@@ -1,14 +1,19 @@
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, UserMixin, AnonymousUserMixin
 
 
 db = SQLAlchemy()
+login_manager = LoginManager()
 
 
 from sqlalchemy.sql import func
-from sqlalchemy import Column, Integer, DateTime, Float, Text, ForeignKey, String, Unicode, Date
+from sqlalchemy import Column, Integer, DateTime, Float, Text, ForeignKey, String, Unicode, Date, Boolean
 from sqlalchemy.orm import relationship, backref, composite
 from sqlalchemy_utils import aggregated, CountryType, EmailType, PhoneNumber
 from wtforms.validators import Email
+from werkzeug.security import generate_password_hash, check_password_hash
+
+from flask_dance.consumer.backend.sqla import OAuthConsumerMixin
 
 
 class Base(db.Model):
@@ -19,8 +24,129 @@ class Base(db.Model):
                         default=func.now(), onupdate=func.now())
 
 
+class Permission:
+    FOLLOW = 1
+    COMMENT = 2
+    WRITE = 4
+    MODERATE = 8
+    ADMIN = 16
+
+
+class User(UserMixin, Base):
+    __tablename__ = 'users'
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = Column(String(64), index=True, unique=False)
+    email = Column(String(120), index=True, unique=True)
+    password_hash = Column(db.String(128))
+    last_seen = Column(DateTime(timezone=True), default=func.now())
+    role_id = Column(Integer, ForeignKey('roles.id'))
+    experiences = relationship('Experience', backref='host', cascade="all, delete-orphan", lazy='dynamic')
+
+    def __init__(self, **kwargs):
+        super(User, self).__init__(**kwargs)
+        if self.role is None:
+            if self.email == 'ssebaggalaq@gmail.com':
+                self.role = Role.query.filter_by(name='Administrator').first()
+            if self.role is None:
+                self.role = Role.query.filter_by(default=True).first()
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def can(self, perm):
+        return self.role is not None and self.role.has_permission(perm)
+
+    def is_administrator(self):
+        return self.can(Permission.ADMIN)
+
+    def __repr__(self):
+        return '<User - {}>'.format(self.username) 
+
+@login_manager.user_loader
+def load_user(id):
+    return User.query.get(int(id))
+
+
+class AnonymousUser(AnonymousUserMixin):
+
+    def can(self, permissions):
+        return False
+
+    def is_administrator(self):
+        return False
+
+
+login_manager.anonymous_user = AnonymousUser
+
+class OAuth(OAuthConsumerMixin, db.Model):
+    provider_user_id = Column(String(256), unique=True)
+    user_id = Column(Integer, ForeignKey(User.id))
+    user = relationship(User)
+
+
+
+class Role(db.Model):
+    __tablename__ = 'roles'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(64), unique=True)
+    default = Column(Boolean, default=False, index=True)
+    permissions = Column(Integer)
+    users = relationship('User', backref='role', lazy='dynamic')
+
+    def __init__(self, **kwargs):
+        super(Role, self).__init__(**kwargs)
+
+        if self.permissions is None:
+            self.permissions = 0
+
+    def add_permission(self, perm):
+        if not self.has_permission(perm):
+            self.permissions += perm
+
+    def remove_permission(self, perm):
+        if self.has_permission(perm):
+            self.permissions -= perm
+
+    def reset_permissions(self):
+        self.permissions = 0
+
+    def has_permission(self, perm):
+        return self.permissions & perm == perm
+
+    @staticmethod
+    def insert_roles():
+        roles = {
+                    'User': [Permission.FOLLOW, Permission.COMMENT, Permission.WRITE],
+                    'Moderator': [Permission.FOLLOW, Permission.COMMENT,
+                    Permission.WRITE, Permission.MODERATE],
+                    'Administrator': [Permission.FOLLOW, Permission.COMMENT,
+                    Permission.WRITE, Permission.MODERATE,
+                    Permission.ADMIN],
+                }
+        default_role = 'User'
+        for r in roles:
+            role = Role.query.filter_by(name=r).first()
+            if role is None:
+                role = Role(name=r)
+            role.reset_permissions()
+            for perm in roles[r]:
+                role.add_permission(perm)
+            role.default = (role.name == default_role)
+            db.session.add(role)
+        db.session.commit()
+
+    def __repr__(self):
+        return '<Role - {}>'.format(self.name)
+
+
 class Experience(Base):
     __tablename__ = 'experiences'
+    __searchable__ = ['host_name','experience_title']
 
     id = Column(Integer, primary_key=True)
     host_name = Column(String(50), unique=True, nullable=False)
@@ -35,6 +161,7 @@ class Experience(Base):
     what_well_do = Column(Text, nullable=False, info={'label': 'What we will do'})
     who_can_come = Column(Text, nullable=False)
     price = Column(Float(20), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
 
     @aggregated('rates', Column(Float, default=0.0))
     def rate_average(self):
@@ -97,11 +224,13 @@ class Experience(Base):
         return '<Experience - {}>'.format(self.experience_title)
 
 
+
+
 class Image(Base):
     __tablename__ = 'images'
 
     id = Column(Integer, primary_key=True)
-    filename = Column(String(30))
+    filename = Column(String(150))
     imageexp = relationship(
         'Imageexp', cascade="all, delete-orphan", backref='image', lazy='dynamic')
     experience_id = Column(Integer, ForeignKey('experiences.id', ondelete='CASCADE'))
@@ -128,9 +257,10 @@ class Imageexp(Base):
 
 class Flyer(Base):
     __tablename__ = 'flyers'
+    __searchable__ = ['filename']
 
     id = Column(Integer, primary_key=True)
-    filename = Column(String(30), nullable=False)
+    filename = Column(String(150), nullable=False)
 
     def __init__(self, **kwargs):
         super(Flyer, self).__init__(**kwargs)
@@ -143,7 +273,7 @@ class Shop(Base):
     __tablename__ = 'shop'
 
     id = Column(Integer, primary_key=True)
-    filename = Column(String(30), nullable=False)
+    filename = Column(String(150), nullable=False)
     item_name = Column(String(30), nullable=False)
     price = Column(Float(10), nullable=False)
 
@@ -161,7 +291,7 @@ class Advert(Base):
     __tablename__ = 'adverts'
 
     id = Column(Integer, primary_key=True)
-    filename = Column(String(30), nullable=False)
+    filename = Column(String(150), nullable=False)
 
     def __init__(self, **kwargs):
         super(Advert, self).__init__(**kwargs)
@@ -223,7 +353,7 @@ class Slideshow(Base):
     __tablename__ = 'slideshow'
 
     id = Column(Integer, primary_key=True)
-    filename = Column(String(30), nullable=False)
+    filename = Column(String(150), nullable=False)
 
     def __init__(self, **kwargs):
         super(Slideshow, self).__init__(**kwargs)
@@ -236,7 +366,7 @@ class Story(Base):
     __tablename__ = 'stories'
 
     id = Column(Integer, primary_key=True)
-    filename = Column(String(30), nullable=False)
+    filename = Column(String(150), nullable=False)
     story_name = Column(String(30), nullable=False)
     caption = Column(String(200), nullable=False)
 

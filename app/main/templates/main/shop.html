@@ -1,0 +1,24 @@
+{% from 'paginate.html' import render_pagination %}
+{% extends 'layout.html' %}
+{% set active_page = "shop" %}
+{% block body %}
+
+	<div class="uk-section uk-container">
+		<h3>Shop Items</h3>
+		<div class="uk-child-width-1-4@m uk-child-width-1-1@s uk-grid-small uk-text-center" uk-grid>
+			{% for item in shop.items %}
+		        <div class="uk-panel">
+		            <img class="uk-height-small uk-border-rounded" src="{{ url_for('admin.uploaded_file', filename=item.filename) }}" alt="{{ item.filename }}">
+		            <div class="uk-text-small uk-text-bold uk-text-baseline" style="color:#00421E;">{{ item.item_name}}</div>
+		            <div class="uk-text-small uk-text-baseline" style="color:#00421E;">${{item.price}}</div>
+		        </div>
+		    {% endfor %}
+		</div>
+		<!--Pagination -->
+		{% if shop.pages >1 %}
+		{{ render_pagination( shop, 'main.shop') }}
+		{% endif %}
+		<!--/Pagination -->
+	</div>
+
+{% endblock %}

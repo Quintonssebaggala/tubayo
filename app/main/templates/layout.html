@@ -7,8 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
     <!-- <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css"> -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.37/css/uikit.min.css" />
-    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}" /> -->
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.37/css/uikit.min.css" /> -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='node_modules/uikit/dist/css/tubayo-theme.css') }}" />
     {% block stylesheet %}{% endblock %}
 
     <!-- uikit js -->
@@ -49,26 +49,45 @@
                         <span uk-navbar-toggle-icon></span>
                         <span class="uk-margin-small-left">Menu</span>
                     </a>
+                    {% set navigation_bar = [
+                        ('/', 'index', 'Home'),
+                        ('/experinces/', 'experiences', 'Experiences'),
+                        ('/shop/', 'shop', 'Shop'),
+                        ('/host/', 'host', 'Become a Host'),
+                        ('/auth/login/', 'login', 'Login'),
+                        ('/auth/signup/', 'signup', 'Signup'),
+                        ('/auth/logout/', 'logout', 'Logout')
+                    ] -%}
+                    {% set active_page = active_page|default('index') -%}
 
                     <ul class="uk-navbar-nav uk-visible@m">
-                        <li class="">
-                            <a href="#">Experiences</a>
-                        </li>
-                        <li class="">
-                            <a href="#">Shop</a>
-                        </li>
-                        <li class="uk-active">
-                            <a href="">Become a Host</a>
-                        </li>
-                        <li class="">
-                            <a href="#">Help</a>
-                        </li>
-                        <li class="uk-active">
-                            <a href="#">view Cart</a>
-                        </li>
-                        <li class="uk-active">
-                            <a href="#">Login</a>
-                        </li>
+                        {% for href, id, caption in navigation_bar %}
+                            {% if current_user.is_anonymous %}
+                                {% if id in ['login', 'signup'] %}
+                                    <li{% if id == active_page %} class="uk-active"{% endif %}>
+                                        <a href="{{ href|e }}">{{ caption|e }}</a>
+                                    </li>
+                                {% elif id in ['logout'] %}
+
+                                {% else %}
+                                    <li{% if id == active_page %} class="uk-active"{% endif %}>
+                                        <a href="{{ href|e }}">{{ caption|e }}</a>
+                                    </li>
+                                {% endif %}
+                            {% else%}
+                                {% if id in ['logout'] %}
+                                    <li{% if id == active_page %} class="uk-active"{% endif %}>
+                                        <a href="{{ href|e }}">{{ caption|e }}</a>
+                                    </li>
+                                {% elif id in ['login', 'signup'] %}
+
+                                {% else %}
+                                    <li{% if id == active_page %} class="uk-active"{% endif %}>
+                                        <a href="{{ href|e }}">{{ caption|e }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
                     </ul>
 
                 </div>
@@ -87,7 +106,7 @@
 
             </nav>
         </div>
-
+        
         {% block body %}{% endblock %}
         <!-- The whole page content goes here -->
 

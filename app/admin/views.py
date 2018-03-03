@@ -23,6 +23,10 @@ TOPIC_DICT = Content()
 def index():
     return render_template('admin/home.html', TOPIC_DICT=TOPIC_DICT)
 
+@admin.route('/test')
+def test():
+    return render_template('admin/test.html', TOPIC_DICT=TOPIC_DICT)
+
 
 @admin.route('/select')
 def select():

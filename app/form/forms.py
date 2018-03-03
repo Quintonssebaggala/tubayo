@@ -4,10 +4,13 @@ from app.data.models import db, Advert, Cart, Date_available, Experience, Flyer,
 
 from wtforms.fields import FormField
 from wtforms_alchemy import ModelFieldList
+from wtforms import DateField, PasswordField, BooleanField, SubmitField
+from wtforms.validators import DataRequired, EqualTo, Email, ValidationError
 
 from flask_wtf import FlaskForm
 from wtforms_alchemy import model_form_factory
 from wtforms_alchemy.fields import StringField, ModelFormField
+from app.data.models import User
 
 # Using WTForms-Alchemy with Flask-WTF (http://wtforms-alchemy.readthedocs.org/en/latest/advanced.html#using-wtforms-alchemy-with-flask-wtf) to include all good features of Flask-WTF https://flask-wtf.readthedocs.org/en/latest/#features
 BaseModelForm = model_form_factory(FlaskForm)
@@ -98,6 +101,37 @@ class ExperienceForm(ModelForm):
         FileRequired(),
         FileAllowed(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'], 'Image Only!')
     ])
+    # dates = DateField(label='Date', format='%Y-%m-%d')
     # image = ModelFieldList(FormField(ImageForm))
     # cart = ModelFieldList(FormField(CartForm))
     # date = ModelFieldList(FormField(Date_available))
+
+class SearchForm(FlaskForm):
+    search = StringField('search', validators=[DataRequired()])
+
+
+class LoginForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    remember_me = BooleanField('Remember Me')
+    submit = SubmitField('Sign In')
+
+
+class RegistrationForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    password2 = PasswordField(
+        'Repeat Password', validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Register')
+
+    def validate_username(self, username):
+        user = User.query.filter_by(username=username.data).first()
+        if user is not None:
+            raise ValidationError('Please use a different username.')
+
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data).first()
+        if user is not None:
+            raise ValidationError('Please use a different email address.')
+

@@ -1,5 +1,5 @@
 from app import app
-from app.data.models import db, Experience, Image, Flyer, Advert, Cart, Date_available, Imageexp, Rate, Shop, Slideshow, Story 
+from app.data.models import db, Experience, Image, Flyer, Advert, Cart, Date_available, Imageexp, Rate, Shop, Slideshow, Story, User, Role 
 from flask_migrate import Migrate
 
 migrate = Migrate(app, db)
@@ -23,4 +23,6 @@ def make_shell_context():
     			Rate=Rate, 
     			Shop=Shop, 
     			Slideshow=Slideshow, 
-    			Story=Story)
+    			Story=Story,
+                User=User,
+                Role=Role)
